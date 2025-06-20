@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useComplaints } from "@/context/ComplaintContext";
 import Navigation from "@/components/Navigation";
+import VoiceAssistant from "@/components/VoiceAssistant";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -1373,22 +1374,22 @@ const Index = () => {
           0%, 100% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
         }
-        
+
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }
         }
-        
+
         @keyframes twinkle {
           0%, 100% { opacity: 0; }
           50% { opacity: 1; }
         }
-        
+
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        
+
         .animate-gradient { animation: gradientShift 8s ease infinite; }
         .animate-float { animation: float 3s ease-in-out infinite; }
         .animate-twinkle { animation: twinkle 2s ease-in-out infinite; }
