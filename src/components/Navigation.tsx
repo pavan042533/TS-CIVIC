@@ -80,6 +80,11 @@ const Navigation = () => {
       icon: <Building2 className="w-4 h-4" />,
     },
     {
+      href: "/schemes",
+      label: t("schemes", "Schemes"),
+      icon: <Sparkles className="w-4 h-4" />,
+    },
+    {
       href: "/register-complaint",
       label: t("register_complaint"),
       icon: <FileText className="w-4 h-4" />,
