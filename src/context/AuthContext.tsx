@@ -48,6 +48,45 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Check if Supabase is properly configured
+  const isSupabaseConfigured = supabase !== null;
+
+  // Mock users database (fallback when Supabase is not configured)
+  const mockUsers = [
+    {
+      id: "admin-001",
+      name: "Admin User",
+      email: "admin@tgcivic.gov.in",
+      phone: "9876543210",
+      role: "admin" as const,
+      department: "IT Department",
+      password: "admin123",
+      createdAt: "2024-01-01T00:00:00Z",
+      lastLogin: new Date().toISOString(),
+    },
+    {
+      id: "citizen-001",
+      name: "Rajesh Kumar",
+      email: "rajesh@email.com",
+      phone: "9876543211",
+      role: "citizen" as const,
+      password: "citizen123",
+      createdAt: "2024-01-15T00:00:00Z",
+      lastLogin: new Date().toISOString(),
+    },
+    {
+      id: "official-001",
+      name: "GHMC Officer",
+      email: "officer@ghmc.gov.in",
+      phone: "9876543212",
+      role: "official" as const,
+      department: "GHMC Roads Department",
+      password: "official123",
+      createdAt: "2024-01-01T00:00:00Z",
+      lastLogin: new Date().toISOString(),
+    },
+  ];
+
   // Convert Supabase user to our User type
   const convertSupabaseUser = (
     supabaseUser: SupabaseUser,
@@ -65,98 +104,150 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   };
 
-  // Load user from Supabase session on mount
+  // Load user from storage on mount
   useEffect(() => {
-    const getSession = async () => {
-      try {
-        const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession();
+    if (isSupabaseConfigured) {
+      // Supabase mode
+      const getSession = async () => {
+        try {
+          const {
+            data: { session },
+            error,
+          } = await supabase!.auth.getSession();
 
-        if (error) {
-          console.error("Error getting session:", error);
+          if (error) {
+            console.error("Error getting session:", error);
+            setIsLoading(false);
+            return;
+          }
+
+          if (session?.user) {
+            // Get user profile from profiles table
+            const { data: profile, error: profileError } = await supabase!
+              .from("profiles")
+              .select("*")
+              .eq("id", session.user.id)
+              .single();
+
+            if (profileError) {
+              console.error("Error fetching profile:", profileError);
+              setIsLoading(false);
+              return;
+            }
+
+            if (profile) {
+              const userWithProfile = convertSupabaseUser(
+                session.user,
+                profile,
+              );
+              setUser(userWithProfile);
+            }
+          }
+        } catch (error) {
+          console.error("Error in getSession:", error);
+        } finally {
           setIsLoading(false);
-          return;
         }
+      };
 
-        if (session?.user) {
-          // Get user profile from profiles table
-          const { data: profile, error: profileError } = await supabase
+      getSession();
+
+      // Listen for auth changes
+      const {
+        data: { subscription },
+      } = supabase!.auth.onAuthStateChange(async (event, session) => {
+        if (event === "SIGNED_IN" && session?.user) {
+          // Get user profile
+          const { data: profile } = await supabase!
             .from("profiles")
             .select("*")
             .eq("id", session.user.id)
             .single();
 
-          if (profileError) {
-            console.error("Error fetching profile:", profileError);
-            setIsLoading(false);
-            return;
-          }
-
           if (profile) {
             const userWithProfile = convertSupabaseUser(session.user, profile);
             setUser(userWithProfile);
           }
+        } else if (event === "SIGNED_OUT") {
+          setUser(null);
         }
-      } catch (error) {
-        console.error("Error in getSession:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      });
 
-    getSession();
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session?.user) {
-        // Get user profile
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", session.user.id)
-          .single();
-
-        if (profile) {
-          const userWithProfile = convertSupabaseUser(session.user, profile);
-          setUser(userWithProfile);
+      return () => subscription.unsubscribe();
+    } else {
+      // Fallback mode - use localStorage
+      const savedUser = localStorage.getItem("tg-civic-user");
+      if (savedUser) {
+        try {
+          const userData = JSON.parse(savedUser);
+          setUser(userData);
+        } catch (error) {
+          console.error("Error loading user from localStorage:", error);
+          localStorage.removeItem("tg-civic-user");
         }
-      } else if (event === "SIGNED_OUT") {
-        setUser(null);
       }
-    });
+      setIsLoading(false);
+    }
+  }, [isSupabaseConfigured]);
 
-    return () => subscription.unsubscribe();
-  }, []);
+  // Save user to localStorage in fallback mode
+  useEffect(() => {
+    if (!isSupabaseConfigured) {
+      if (user) {
+        localStorage.setItem("tg-civic-user", JSON.stringify(user));
+      } else {
+        localStorage.removeItem("tg-civic-user");
+      }
+    }
+  }, [user, isSupabaseConfigured]);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      if (isSupabaseConfigured) {
+        // Supabase mode
+        const { data, error } = await supabase!.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-      if (error) {
-        console.error("Login error:", error);
+        if (error) {
+          console.error("Login error:", error);
+          return false;
+        }
+
+        if (data.user) {
+          // Update last login
+          await supabase!
+            .from("profiles")
+            .update({ last_login: new Date().toISOString() })
+            .eq("id", data.user.id);
+
+          return true;
+        }
+
+        return false;
+      } else {
+        // Fallback mode - use mock users
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        const foundUser = mockUsers.find(
+          (u) => u.email === email && u.password === password,
+        );
+
+        if (foundUser) {
+          const { password: _, ...userWithoutPassword } = foundUser;
+          const userWithLastLogin = {
+            ...userWithoutPassword,
+            lastLogin: new Date().toISOString(),
+          };
+          setUser(userWithLastLogin);
+          return true;
+        }
+
         return false;
       }
-
-      if (data.user) {
-        // Update last login
-        await supabase
-          .from("profiles")
-          .update({ last_login: new Date().toISOString() })
-          .eq("id", data.user.id);
-
-        return true;
-      }
-
-      return false;
     } catch (error) {
       console.error("Login error:", error);
       return false;
@@ -174,51 +265,80 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
 
     try {
-      // Check if user already exists in profiles table (for phone uniqueness)
-      const { data: existingProfile } = await supabase
-        .from("profiles")
-        .select("phone")
-        .eq("phone", userData.phone)
-        .single();
+      if (isSupabaseConfigured) {
+        // Supabase mode
+        const { data: existingProfile } = await supabase!
+          .from("profiles")
+          .select("phone")
+          .eq("phone", userData.phone)
+          .single();
 
-      if (existingProfile) {
-        return false; // Phone number already exists
-      }
+        if (existingProfile) {
+          return false; // Phone number already exists
+        }
 
-      // Create auth user
-      const { data, error } = await supabase.auth.signUp({
-        email: userData.email,
-        password: userData.password,
-      });
+        // Create auth user
+        const { data, error } = await supabase!.auth.signUp({
+          email: userData.email,
+          password: userData.password,
+        });
 
-      if (error) {
-        console.error("Registration error:", error);
+        if (error) {
+          console.error("Registration error:", error);
+          return false;
+        }
+
+        if (data.user) {
+          // Create profile
+          const { error: profileError } = await supabase!
+            .from("profiles")
+            .insert({
+              id: data.user.id,
+              name: userData.name,
+              email: userData.email,
+              phone: userData.phone,
+              role: "citizen",
+              created_at: new Date().toISOString(),
+              last_login: new Date().toISOString(),
+            });
+
+          if (profileError) {
+            console.error("Profile creation error:", profileError);
+            return false;
+          }
+
+          return true;
+        }
+
         return false;
-      }
+      } else {
+        // Fallback mode - use mock users
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      if (data.user) {
-        // Create profile
-        const { error: profileError } = await supabase.from("profiles").insert({
-          id: data.user.id,
+        // Check if user already exists
+        const existingUser = mockUsers.find(
+          (u) => u.email === userData.email || u.phone === userData.phone,
+        );
+
+        if (existingUser) {
+          return false;
+        }
+
+        // Create new user
+        const newUser: User = {
+          id: `citizen-${Date.now()}`,
           name: userData.name,
           email: userData.email,
           phone: userData.phone,
           role: "citizen",
-          created_at: new Date().toISOString(),
-          last_login: new Date().toISOString(),
-        });
+          createdAt: new Date().toISOString(),
+          lastLogin: new Date().toISOString(),
+        };
 
-        if (profileError) {
-          console.error("Profile creation error:", profileError);
-          // Try to clean up the auth user if profile creation failed
-          await supabase.auth.admin.deleteUser(data.user.id);
-          return false;
-        }
-
+        mockUsers.push({ ...newUser, password: userData.password } as any);
+        setUser(newUser);
         return true;
       }
-
-      return false;
     } catch (error) {
       console.error("Registration error:", error);
       return false;
@@ -229,7 +349,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     try {
-      await supabase.auth.signOut();
+      if (isSupabaseConfigured) {
+        await supabase!.auth.signOut();
+      }
       setUser(null);
 
       // Force redirect to homepage after logout
@@ -245,18 +367,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          name: updates.name,
-          phone: updates.phone,
-          department: updates.department,
-        })
-        .eq("id", user.id);
+      if (isSupabaseConfigured) {
+        const { error } = await supabase!
+          .from("profiles")
+          .update({
+            name: updates.name,
+            phone: updates.phone,
+            department: updates.department,
+          })
+          .eq("id", user.id);
 
-      if (error) {
-        console.error("Profile update error:", error);
-        return;
+        if (error) {
+          console.error("Profile update error:", error);
+          return;
+        }
       }
 
       // Update local state
