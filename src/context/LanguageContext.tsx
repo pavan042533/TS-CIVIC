@@ -204,7 +204,7 @@ const translations = {
   },
   smart_registration_desc: {
     en: "AI-powered complaint categorization with photo upload and GPS location",
-    hi: "फोटो अपलोड और GPS स्थान के साथ AI-संचालित शिकायत वर्गीकरण",
+    hi: "फोटो अपलोड और GPS स्थान के साथ AI-संचालित शिकायत ���र्गीकरण",
     te: "ఫోటో అప్‌లోడ్ మరియు GPS లొకేషన్‌తో AI-శక్తితో కూడిన ఫిర్యాదు వర్గీకరణ",
   },
   real_time_tracking: {
@@ -290,6 +290,242 @@ const translations = {
     te: "అన్నింటినీ క్లియర్ చేయండి",
   },
 
+  // Schemes
+  schemes: {
+    en: "Schemes",
+    hi: "योजनाएं",
+    te: "పథకాలు",
+  },
+  government_schemes: {
+    en: "Government Schemes",
+    hi: "सरकार��� योजनाएं",
+    te: "ప్రభుత్వ పథకాలు",
+  },
+  schemes_description: {
+    en: "Discover welfare programs and benefits available for Telangana citizens. Apply directly to official portals.",
+    hi: "तेलंगाना नागरिकों के लिए उपलब्ध कल्याणकारी कार्यक्रमों और लाभों की खोज करें। सीधे आधिकारिक पोर्टल पर आवेदन करें।",
+    te: "తెలంగాణ పౌరులకు అందుబాటులో ఉన్న సంక్షేమ కార్యక్రమాలు మరియు ప్రయోజనాలను కనుగొనండి. అధికారిక పోర్టల్‌లకు నేరుగా దరఖాస్తు చేయండి.",
+  },
+  farmers: {
+    en: "Farmers",
+    hi: "किसान",
+    te: "రైతులు",
+  },
+  senior_citizens: {
+    en: "Senior Citizens",
+    hi: "वरिष्ठ नागरिक",
+    te: "వృద్ధ పౌరులు",
+  },
+  students: {
+    en: "Students",
+    hi: "छात्र",
+    te: "విద్యార్థులు",
+  },
+  women: {
+    en: "Women",
+    hi: "महिलाएं",
+    te: "మహిళలు",
+  },
+  all_citizens: {
+    en: "All Citizens",
+    hi: "सभी नागरिक",
+    te: "అన్ని పౌరులు",
+  },
+  search_schemes: {
+    en: "Search schemes...",
+    hi: "योजनाएं खोजें...",
+    te: "పథకాలను వెతకండి...",
+  },
+  select_category: {
+    en: "Select Category",
+    hi: "श्रेणी चुनें",
+    te: "వర్గాన్ని ఎంచుకోండి",
+  },
+  showing_schemes: {
+    en: "Showing",
+    hi: "दिखा रहे हैं",
+    te: "చూపిస్తోంది",
+  },
+  key_benefits: {
+    en: "Key Benefits",
+    hi: "मुख्य लाभ",
+    te: "ముఖ్య ప్రయోజనాలు",
+  },
+  more: {
+    en: "more",
+    hi: "और",
+    te: "మరిన్ని",
+  },
+  views: {
+    en: "views",
+    hi: "बार देखा गया",
+    te: "వీక్షణలు",
+  },
+  apply_now: {
+    en: "Apply Now",
+    hi: "अभी आवेदन करें",
+    te: "ఇప్పుడే దరఖాస్���ు చేయండి",
+  },
+  no_schemes_found: {
+    en: "No schemes found",
+    hi: "कोई योजना नहीं मिली",
+    te: "పథకాలు కనుగొనబడలేదు",
+  },
+  try_different_search: {
+    en: "Try adjusting your search or filter criteria",
+    hi: "अपनी खोज या फ़िल्टर मानदंड को समायोजित करने का प्रयास करें",
+    te: "మీ శోధన లేదా ఫిల్టర్ ప్రమాణాలను సర్దుబాటు చేయడానికి ప్రయత్నించండి",
+  },
+  eligibility: {
+    en: "Eligibility",
+    hi: "पात्रता",
+    te: "అర్హత",
+  },
+  required_documents: {
+    en: "Required Documents",
+    hi: "आवश्यक दस्तावेज",
+    te: "అవసరమైన పత్రాలు",
+  },
+  benefits: {
+    en: "Benefits",
+    hi: "लाभ",
+    te: "ప్రయోజనాలు",
+  },
+  listen: {
+    en: "Listen",
+    hi: "सुनें",
+    te: "వినండి",
+  },
+  share: {
+    en: "Share",
+    hi: "साझा करें",
+    te: "భాగస్వామ్యం చేయండి",
+  },
+
+  // Voice Assistant
+  voice_assistant: {
+    en: "Voice Assistant",
+    hi: "आवाज सहायक",
+    te: "వాయిస్ అసిస్టెంట్",
+  },
+  voice_assistant_description: {
+    en: "Ask about government schemes in Telugu, Hindi, or English",
+    hi: "तेलुगु, हिंदी या अंग्रेजी में सरकारी योजनाओं के बारे में पूछें",
+    te: "తెలుగు, హిందీ లేదా ఇంగ్లీష్‌లో ప్రభుత్వ పథకాల గురించి అడగండి",
+  },
+  voice_assistant_welcome: {
+    en: "Hello! I'm your Telugu voice assistant for government schemes. You can ask me about Rythu Bandhu, Kalyana Lakshmi, Aasara Pension, or any other schemes. How can I help you today?",
+    hi: "नमस्ते! मैं सरकारी योजनाओं के लिए आपका तेलुगु आवाज सहायक हूं। आप मुझसे रायतु बंधु, कल्याण लक्ष्मी, आसरा पेंशन या किसी अन्य योजना के बारे में पूछ सकते हैं। आज मैं आपकी कैसे मदद कर सकता हूं?",
+    te: "నమస్కారం! నేను ప్రభుత్వ పథకాల కోసం మీ తెలుగు వాయిస్ అసిస్టెంట్. మీరు రైతు బంధు, కల్యాణ లక్ష్మి, ఆసరా పెన్షన్ లేదా ఏదైనా ఇతర పథకాల గురించి నన్ను అడగవచ్చు. ఈ రోజు నేను మీకు ఎలా సహాయం చేయగలను?",
+  },
+  stop_listening: {
+    en: "Stop Listening",
+    hi: "सुनना बंद करें",
+    te: "వినడం ఆపండి",
+  },
+  start_speaking: {
+    en: "Start Speaking",
+    hi: "बोलना शुरू करें",
+    te: "మాట్లాడటం ప్రారంభించండి",
+  },
+  you_said: {
+    en: "You said",
+    hi: "आपने कहा",
+    te: "మీరు చెప్పారు",
+  },
+  listening: {
+    en: "Listening...",
+    hi: "सुन रहे हैं...",
+    te: "వింటున్నాము...",
+  },
+  speaking: {
+    en: "Speaking...",
+    hi: "बोल रहे हैं...",
+    te: "మాట్లాడుతున్నాము...",
+  },
+  voice_assistant_tip: {
+    en: "Try asking: 'Tell me about Rythu Bandhu' or 'What schemes are for farmers?'",
+    hi: "पूछने की कोशिश करें: 'रायतु बंधु के बारे में बताएं' या 'किसानों के लिए कौन सी योजनाएं हैं?'",
+    te: "'రైతు బంధు గురించి చెప్పండి' లేదా 'రైతులకు ఏ పథకాలు ఉన్నాయి?' అని అడగడానికి ప్రయత్నించండి",
+  },
+
+  // Enhanced Complaint Form
+  enhanced_complaint_desc: {
+    en: "Enhanced with voice input, GPS location, and smart suggestions",
+    hi: "वॉयस इनपुट, GPS स्थान और स्मार्ट सुझावों के साथ बेहतर",
+    te: "వాయిస్ ఇన్‌పుట్, GPS లొకేషన్ మరియు స్మార్ట్ సూచనలతో మెరుగుపరచబడింది",
+  },
+  voice_enabled: {
+    en: "Voice Enabled",
+    hi: "आवाज सक्षम",
+    te: "వాయిస్ ఎనేబుల్డ్",
+  },
+  gps_enabled: {
+    en: "GPS Enabled",
+    hi: "GPS सक्षम",
+    te: "GPS ఎనేబుల్డ్",
+  },
+  ai_powered: {
+    en: "AI Powered",
+    hi: "AI संचालित",
+    te: "AI పవర్డ్",
+  },
+  ai_suggestions: {
+    en: "AI detected possible categories based on your description",
+    hi: "AI ने आपके विवरण के आधार पर संभावित श्रेणियों का पता लगाया",
+    te: "AI మీ వర్ణన ఆధారంగా సాధ్యమైన వర్గాలను గుర్తించింది",
+  },
+  voice_input_description: {
+    en: "Use voice input to describe your issue",
+    hi: "अपनी समस्या का वर्णन करने के लिए आवाज इनपुट का उपयोग करें",
+    te: "మీ సమస్యను వివరించడానికి వాయిస్ ఇన్‌పుట్ ఉపయోగించండి",
+  },
+  describe_issue: {
+    en: "Describe the issue in detail or use voice input",
+    hi: "समस्या का विस्तार से वर्णन करें या वॉयस इनपुट का उपयोग करें",
+    te: "సమస్యను వివరంగా వివరించండి లేదా వాయిస్ ఇన్‌పుట్ ఉపయోగించండి",
+  },
+  gps_coordinates: {
+    en: "GPS Coordinates",
+    hi: "GPS निर्देशांक",
+    te: "GPS కోఆర్డినేట్‌లు",
+  },
+  take_photo: {
+    en: "Take Photo",
+    hi: "फोटो लें",
+    te: "ఫోటో తీయండి",
+  },
+  upload_photos: {
+    en: "Click to select photos",
+    hi: "फोटो चुनने के लिए क्लिक करें",
+    te: "ఫోటోలను ఎంచుకోవడానికి క్లిక్ చేయండి",
+  },
+  enhanced_features: {
+    en: "Enhanced Features Used",
+    hi: "उपयोग की गई बेहतर सुविधाएं",
+    te: "ఉపయోగించిన మెరుగుపరచబడిన లక్షణాలు",
+  },
+  gps_location_saved: {
+    en: "GPS location saved",
+    hi: "GPS स्थान सेव किया गया",
+    te: "GPS లొకేషన్ సేవ్ చేయబడింది",
+  },
+  photos_attached: {
+    en: "photos attached",
+    hi: "फोटो संलग्न",
+    te: "ఫోటోలు జత చేయబడ్డాయి",
+  },
+  voice_input_used: {
+    en: "Voice input used",
+    hi: "वॉयस इनपुट का उपयोग किया गया",
+    te: "వాయిస��� ఇన్‌పుట్ ఉపయోగించబడింది",
+  },
+  real_time_updates: {
+    en: "Real-time status updates enabled",
+    hi: "रियल-टाइम स्थिति अपडेट सक्षम",
+    te: "రియల్-టైమ్ స్థితి అప్‌డేట్‌లు ఎనేబుల్ చేయబడ్డాయి",
+  },
+
   // Common
   loading: {
     en: "Loading...",
@@ -329,7 +565,7 @@ const translations = {
   edit: {
     en: "Edit",
     hi: "संपादित करें",
-    te: "సవరించండి",
+    te: "సవరి���చండి",
   },
   view: {
     en: "View",
@@ -375,7 +611,7 @@ const translations = {
   },
   ai_track_help: {
     en: "To track your complaint: 1) Go to 'Track Complaint' page, 2) Enter your complaint ID (format: TGC2024XXXXXX) or phone number, 3) View complete status history and details. Do you have your complaint ID?",
-    hi: "अपनी शिकायत को ट्रैक करने के लिए: 1) 'शिकायत ट्र���क करें' पेज पर जाएं, 2) अपना शिकायत ID (प्रारूप: TGC2024XXXXXX) या फोन नंबर दर्ज करें, 3) पूर्ण स्थिति इतिहास और विवरण देखें। क्या आपके पास अपना शिकायत ID है?",
+    hi: "अपनी शिकायत को ट्रैक करने के लिए: 1) 'शिकायत ट्र���क करें' पेज पर जाएं, 2) अपना शिकाय��� ID (प्रारूप: TGC2024XXXXXX) या फोन नंबर दर्ज करें, 3) पूर्ण स्थिति इतिहास और विवरण देखें। क्या आपके पास अपना शिकायत ID है?",
     te: "మీ ఫిర్యాదును ట్రాక్ చేయడానికి: 1) 'ఫిర్యాదు ట్రాక్ చేయండి' పేజీకి వెళ్లండి, 2) మీ ఫిర్యాదు ID (ఫార్మాట్: TGC2024XXXXXX) లేదా ఫోన్ నంబర్ నమోదు చేయండి, 3) పూర్తి స్థితి చరిత్ర మరియు వివరాలను చూడండి. మీ దగ్గర మీ ఫిర్యాదు ID ఉందా?",
   },
   ai_time_help: {
@@ -391,7 +627,7 @@ const translations = {
   ai_location_help: {
     en: "For location: 1) Use 'My Location' button for automatic GPS detection, 2) Or manually enter your address, 3) Add nearby landmarks for better identification. Accurate location helps officials reach the right spot quickly.",
     hi: "स्थान के लिए: 1) स्वचालित GPS खोज के लिए 'मेरा स्थान' बटन का उपयोग करें, 2) या मैन्युअल रूप से अपना पता दर्ज करें, 3) बेहतर पहचान के लिए आस-पास के स्थलचिह्न जोड़ें। सटीक स्थान अधिकारियों को सही जगह जल्दी पहुंचने में मदद करता है।",
-    te: "లొకేషన్ కోసం: 1) ఆటోమేటిక్ GPS గుర్తింపు కోసం 'నా లొకేషన్' బటన్ ఉపయోగించండి, 2) లేదా మాన్యువల్‌గా మీ చిరునామా నమోదు చేయండి, 3) మంచి గుర్తింపు కోసం సమీపంలోని ల్యాండ్‌మార్క్‌లను జోడించండి. ఖచ్చితమైన లొకేషన్ అధికారులకు సరైన ప్రదేశాన���కి త్వరగా చేరుకోవడంలో సహాయపడుతుంది.",
+    te: "లొకేషన్ కోసం: 1) ఆటోమేటిక్ GPS గుర్తింపు కోసం 'నా లొకేషన్' బటన్ ఉపయోగించండి, 2) లేదా మాన్యువల్‌గా మీ చిరునామా నమోదు చేయండి, 3) మంచి గుర్తింపు కోసం సమీపంలోని ల్యాండ్‌మార్క్‌లను జోడించండి. ఖచ్చితమైన లొకేషన్ అధికారులకు సరైన ప్రదేశాన���కి త్వరగా చేరుకోవడంలో స���ాయపడుతుంది.",
   },
   ai_contact_help: {
     en: "You can contact support: 📞 Helpline: 1800-XXX-XXXX (24/7), 📧 Email: support@tgcivic.gov.in, 🏢 Visit your local municipal office, or continue chatting with me for immediate help!",
@@ -415,7 +651,7 @@ const translations = {
   },
   ai_quick_register: {
     en: "How to register complaint?",
-    hi: "शिकायत कैसे दर्ज करें?",
+    hi: "��िकायत कैसे दर्ज करें?",
     te: "ఫిర్యాదు ఎలా నమోదు చేయాలి?",
   },
   ai_quick_track: {
@@ -450,7 +686,7 @@ const translations = {
   },
   ai_track_btn: {
     en: "Track",
-    hi: "ट्रैक करें",
+    hi: "���्रैक करें",
     te: "ట్రాక్ చేయండి",
   },
   ai_support_btn: {
