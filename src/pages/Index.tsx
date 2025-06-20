@@ -1368,6 +1368,9 @@ const Index = () => {
         </div>
       </footer>
 
+      {/* Voice Assistant */}
+      <VoiceAssistant />
+
       {/* Custom Styles */}
       <style>{`
         @keyframes gradientShift {
