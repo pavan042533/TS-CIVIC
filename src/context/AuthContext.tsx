@@ -5,6 +5,8 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
+import { supabase } from "@/lib/supabase";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 export interface User {
   id: string;
@@ -46,85 +48,111 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mock users database
-  const mockUsers = [
-    {
-      id: "admin-001",
-      name: "Admin User",
-      email: "admin@tgcivic.gov.in",
-      phone: "9876543210",
-      role: "admin" as const,
-      department: "IT Department",
-      password: "admin123",
-      createdAt: "2024-01-01T00:00:00Z",
-      lastLogin: new Date().toISOString(),
-    },
-    {
-      id: "citizen-001",
-      name: "Rajesh Kumar",
-      email: "rajesh@email.com",
-      phone: "9876543211",
-      role: "citizen" as const,
-      password: "citizen123",
-      createdAt: "2024-01-15T00:00:00Z",
-      lastLogin: new Date().toISOString(),
-    },
-    {
-      id: "official-001",
-      name: "GHMC Officer",
-      email: "officer@ghmc.gov.in",
-      phone: "9876543212",
-      role: "official" as const,
-      department: "GHMC Roads Department",
-      password: "official123",
-      createdAt: "2024-01-01T00:00:00Z",
-      lastLogin: new Date().toISOString(),
-    },
-  ];
+  // Convert Supabase user to our User type
+  const convertSupabaseUser = (
+    supabaseUser: SupabaseUser,
+    profile: any,
+  ): User => {
+    return {
+      id: supabaseUser.id,
+      name: profile.name,
+      email: supabaseUser.email!,
+      phone: profile.phone,
+      role: profile.role,
+      department: profile.department,
+      createdAt: profile.created_at,
+      lastLogin: profile.last_login || new Date().toISOString(),
+    };
+  };
 
-  // Load user from localStorage on mount
+  // Load user from Supabase session on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem("tg-civic-user");
-    if (savedUser) {
+    const getSession = async () => {
       try {
-        const userData = JSON.parse(savedUser);
-        setUser(userData);
-      } catch (error) {
-        console.error("Error loading user from localStorage:", error);
-        localStorage.removeItem("tg-civic-user");
-      }
-    }
-    setIsLoading(false);
-  }, []);
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
 
-  // Save user to localStorage whenever user changes
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem("tg-civic-user", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("tg-civic-user");
-    }
-  }, [user]);
+        if (error) {
+          console.error("Error getting session:", error);
+          setIsLoading(false);
+          return;
+        }
+
+        if (session?.user) {
+          // Get user profile from profiles table
+          const { data: profile, error: profileError } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", session.user.id)
+            .single();
+
+          if (profileError) {
+            console.error("Error fetching profile:", profileError);
+            setIsLoading(false);
+            return;
+          }
+
+          if (profile) {
+            const userWithProfile = convertSupabaseUser(session.user, profile);
+            setUser(userWithProfile);
+          }
+        }
+      } catch (error) {
+        console.error("Error in getSession:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getSession();
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" && session?.user) {
+        // Get user profile
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
+          .single();
+
+        if (profile) {
+          const userWithProfile = convertSupabaseUser(session.user, profile);
+          setUser(userWithProfile);
+        }
+      } else if (event === "SIGNED_OUT") {
+        setUser(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
 
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      // Find user in mock database
-      const foundUser = mockUsers.find(
-        (u) => u.email === email && u.password === password,
-      );
+      if (error) {
+        console.error("Login error:", error);
+        return false;
+      }
 
-      if (foundUser) {
-        const { password: _, ...userWithoutPassword } = foundUser;
-        const userWithLastLogin = {
-          ...userWithoutPassword,
-          lastLogin: new Date().toISOString(),
-        };
-        setUser(userWithLastLogin);
+      if (data.user) {
+        // Update last login
+        await supabase
+          .from("profiles")
+          .update({ last_login: new Date().toISOString() })
+          .eq("id", data.user.id);
+
         return true;
       }
 
@@ -146,34 +174,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
 
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Check if user already exists in profiles table (for phone uniqueness)
+      const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("phone")
+        .eq("phone", userData.phone)
+        .single();
 
-      // Check if user already exists
-      const existingUser = mockUsers.find(
-        (u) => u.email === userData.email || u.phone === userData.phone,
-      );
-
-      if (existingUser) {
-        return false; // User already exists
+      if (existingProfile) {
+        return false; // Phone number already exists
       }
 
-      // Create new user
-      const newUser: User = {
-        id: `citizen-${Date.now()}`,
-        name: userData.name,
+      // Create auth user
+      const { data, error } = await supabase.auth.signUp({
         email: userData.email,
-        phone: userData.phone,
-        role: "citizen",
-        createdAt: new Date().toISOString(),
-        lastLogin: new Date().toISOString(),
-      };
+        password: userData.password,
+      });
 
-      // Add to mock database (in real app, this would be an API call)
-      mockUsers.push({ ...newUser, password: userData.password } as any);
+      if (error) {
+        console.error("Registration error:", error);
+        return false;
+      }
 
-      setUser(newUser);
-      return true;
+      if (data.user) {
+        // Create profile
+        const { error: profileError } = await supabase.from("profiles").insert({
+          id: data.user.id,
+          name: userData.name,
+          email: userData.email,
+          phone: userData.phone,
+          role: "citizen",
+          created_at: new Date().toISOString(),
+          last_login: new Date().toISOString(),
+        });
+
+        if (profileError) {
+          console.error("Profile creation error:", profileError);
+          // Try to clean up the auth user if profile creation failed
+          await supabase.auth.admin.deleteUser(data.user.id);
+          return false;
+        }
+
+        return true;
+      }
+
+      return false;
     } catch (error) {
       console.error("Registration error:", error);
       return false;
@@ -182,19 +227,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("tg-civic-user");
-    // Force redirect to homepage after logout
-    if (typeof window !== "undefined") {
-      window.location.href = "/";
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+
+      // Force redirect to homepage after logout
+      if (typeof window !== "undefined") {
+        window.location.href = "/";
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
     }
   };
 
-  const updateProfile = (updates: Partial<User>) => {
-    if (user) {
+  const updateProfile = async (updates: Partial<User>) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          name: updates.name,
+          phone: updates.phone,
+          department: updates.department,
+        })
+        .eq("id", user.id);
+
+      if (error) {
+        console.error("Profile update error:", error);
+        return;
+      }
+
+      // Update local state
       const updatedUser = { ...user, ...updates };
       setUser(updatedUser);
+    } catch (error) {
+      console.error("Profile update error:", error);
     }
   };
 
