@@ -17,6 +17,7 @@ import RegisterComplaint from "./pages/RegisterComplaint";
 import RegisterComplaintEnhanced from "./pages/RegisterComplaintEnhanced";
 import TrackComplaint from "./pages/TrackComplaint";
 import Dashboard from "./pages/Dashboard";
+import DashboardEnhanced from "./pages/DashboardEnhanced";
 import Notifications from "./pages/Notifications";
 import Schemes from "./pages/Schemes";
 import NotFound from "./pages/NotFound";
@@ -67,7 +68,7 @@ const App = () => (
                       path="/dashboard"
                       element={
                         <ProtectedRoute requiredRole={["admin", "official"]}>
-                          <Dashboard />
+                          <DashboardEnhanced />
                         </ProtectedRoute>
                       }
                     />
